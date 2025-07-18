@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sentiment-api
+    env: python
+    plan: free
+    rootDir: backend_modelo
+    buildCommand: pip install -r ../requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: HF_TOKEN
+        sync: false
+      - key: MODEL_NAME
+        sync: false
+      - key: HUGGINGFACE_MODEL_ID
+        sync: false
+
+  - type: web
+    name: sentiment-web
+    env: python
+    plan: free
+    rootDir: sentyment_analyst_web_project
+    buildCommand: pip install -r ../requirements.txt
+    startCommand: python manage.py runserver 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*"
