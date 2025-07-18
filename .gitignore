@@ -1,0 +1,26 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# pytest cache
+.pytest_cache/
+
+# Entorno virtual (si usas venv)
+venv/
+env/
+.venv/
+
+# Archivos de entorno
+*.env
+
+# Archivos de configuración de editor
+.vscode/
+.idea/
+
+# Archivos de logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.swp

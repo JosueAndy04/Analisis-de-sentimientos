@@ -1,0 +1,132 @@
+{% load static %} {% load dict_extras %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard de Sentimientos</title>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="{% static 'js/upload.js' %}"></script>
+</head>
+<body>
+  <div class="parent">
+    <div class="div1 card">
+      <div>
+        <h3>Top 10 Usuarios<br />por Interacciones y Audiencia</h3>
+        <ul>
+          {% for user in data.top_users %}
+          <li>
+            <span>
+              <span class="user-handle">{{ user.Name }}</span>
+              <span style="color: #888">({{ user.Handle }})</span>
+            </span>
+            <span class="user-score">
+              {{ user|get_item:"Interacciones y Audiencia" }}
+            </span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="div2 card stats-card">
+      <h3>Estadísticas Generales</h3>
+      <div class="stats-columns">
+        <ul class="stats-list">
+          <li>
+            <i class="fa-solid fa-retweet stats-icon"></i>
+            <div>
+              <strong>Total Retweets:</strong><br />
+              {{ data.total_retweets }}
+            </div>
+          </li>
+          <li>
+            <i class="fa-solid fa-heart stats-icon"></i>
+            <div>
+              <strong>Total Likes:</strong><br />
+              {{ data.total_likes }}
+            </div>
+          </li>
+        </ul>
+        <ul class="stats-list">
+          <li>
+            <i class="fa-solid fa-eye stats-icon"></i>
+            <div>
+              <strong>Total Views:</strong><br />
+              {{ data.total_views }}
+            </div>
+          </li>
+          <li>
+            <i class="fa-solid fa-comments stats-icon"></i>
+            <div>
+              <strong>Total Comments:</strong><br />
+              {{ data.total_comments }}
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="div3 card">
+      <div>
+        <h3>Distribución de Sentimientos</h3>
+        <div class="canvas-wrapper">
+          <div id="sentimentPie" data-values='{{ data.sentiment_counts|default:"{}"|escapejs }}'></div>
+        </div>
+      </div>
+    </div>
+    <div class="div4 card">
+      {% if data.post_max_interacciones %}
+      <div>
+        <h3>Post con más Interacciones y Audiencia</h3>
+        <ul>
+          <li>
+            <strong>Name:</strong>
+            <span style="color: #34495e; font-size: 1.2em">
+              {{ data.post_max_interacciones.Name }}
+            </span>
+          </li>
+          <li>
+            <strong>Handle:</strong>
+            <span style="color: #2980b9; font-size: 1.1em">
+              {{ data.post_max_interacciones.Handle }}
+            </span>
+          </li>
+          <li>
+            <strong>Retweets:</strong> {{ data.post_max_interacciones.Retweets }}
+          </li>
+          <li><strong>Likes:</strong> {{ data.post_max_interacciones.Likes }}</li>
+          <li>
+            <strong>Comments:</strong> {{ data.post_max_interacciones.Comments }}
+          </li>
+          <li><strong>Views:</strong> {{ data.post_max_interacciones.Views }}</li>
+          <li>
+            <strong>Post Body:</strong>
+            {{ data.post_max_interacciones|get_item:"Post Body" }}
+          </li>
+          <li>
+            <strong>Timestamp:</strong>
+            {{ data.post_max_interacciones.Timestamp }}
+          </li>
+          <li>
+            <strong>Sentimiento:</strong>
+            {{ data.post_max_interacciones.Sentimiento }}
+          </li>
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+    <div class="div6 card">
+      <div class="canvas-wrapper">
+        <h3>Sentimientos por Mes</h3>
+        <div id="sentimentLine" data-values='{{ data.sentiment_month|default:"[]"|escapejs }}'></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.renderDashboardCharts(
+      {{ data.sentiment_counts|default:"{}"|safe }},
+      {{ data.sentiment_month|default:"[]"|safe }}
+    );
+  </script>
+</body>
+</html>

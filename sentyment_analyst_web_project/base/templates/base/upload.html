@@ -1,0 +1,123 @@
+{% load static %} {% load dict_extras %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Análisis de Sentimientos</title>
+    <link rel="stylesheet" href="{% static 'css/upload.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="{% static 'js/upload.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="left-panel">
+        <h1>
+          <span>Análisis</span><br />
+          <span>de</span><br />
+          <span>Sentimientos</span>
+        </h1>
+        <p>
+          El servicio ofrece una herramienta automatizada de análisis de
+          sentimientos que permite procesar archivos en formato CSV o Excel con
+          publicaciones escritas (como tuits o comentarios) y clasificar cada
+          entrada como positiva, negativa o neutra. Está diseñado para facilitar
+          el estudio de opinión pública, redes sociales o medios digitales,
+          generando resultados visuales y exportables de forma rápida y
+          accesible.
+        </p>
+        <form
+          class="upload-form"
+          method="post"
+          enctype="multipart/form-data"
+          action="{% url 'upload_file' %}"
+        >
+          {% csrf_token %}
+          <label id="file-label" for="file" class="btn-file"
+            >Agrega un archivo excel o csv</label
+          >
+          <input type="file" id="file" name="file" required />
+          <button type="submit" class="btn-empezar">Empezar</button>
+        </form>
+        <div class="footer-links">
+          <a href="#">¿Como empezar?</a>
+          <a href="#">Ayuda</a>
+          <a href="#">Recomendaciones</a>
+        </div>
+      </div>
+      <div class="right-panel">
+        <div class="right-content">
+          <h2>¿Cómo empezar?</h2>
+          <p>
+            La plataforma de análisis de sentimiento fue diseñada como parte de
+            un trabajo de tesis para proporcionar una solución eficiente,
+            automatizada y confiable que permita a investigadores, periodistas y
+            analistas interpretar rápidamente grandes volúmenes de datos
+            sociales, en especial desde redes como Twitter. El sistema procesa
+            archivos .csv o .xlsx que contengan publicaciones, identificando el
+            sentimiento asociado a cada entrada como positivo, neutro o
+            negativo. Para que la plataforma funcione correctamente, el archivo
+            debe tener una estructura específica, siendo la columna "Post Body"
+            (cuerpo del texto) la principal fuente de análisis. Una vez cargado,
+            el sistema devuelve un panel visual (dashboard) con métricas clave
+            como precisión del análisis, gráficos de distribución, y una opción
+            para descargar resultados en PDF. Esto permite ahorrar tiempo y
+            obtener insights inmediatos para estudios de opinión, campañas, o
+            monitoreo de medios.
+          </p>
+          <table class="example-table">
+            <tr>
+              <th>Name</th>
+              <th>Handle</th>
+              <th>Retweets</th>
+              <th>Likes</th>
+              <th>Comments</th>
+              <th>Views</th>
+              <th>Post Body</th>
+              <th>Timestamp</th>
+              <th>Interacciones y Audiencia</th>
+              <th>Periodo</th>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </table>
+          <div class="note">
+            <span>⚠️</span>
+            <span>
+              Nota: Aunque todas las columnas deben estar presentes, solo "Post
+              Body" es usada para el análisis de sentimiento.<br />
+              Las demás columnas son utilizadas para enriquecer el dashboard o
+              exportar el resultado completo.
+            </span>
+          </div>
+          <div
+            class="dashboard-actions"
+            style="text-align: right; margin-bottom: 1em"
+          ></div>
+          <div class="parent"></div>
+        </div>
+        <div class="footer-bar-panel">
+          <div class="footer-bar">
+            Trabajo de Titulacion - Universidad Central del Ecuador - Ingenieria
+            en Sistemas de Informacion
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
