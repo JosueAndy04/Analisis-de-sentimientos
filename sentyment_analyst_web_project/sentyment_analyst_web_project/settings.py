@@ -15,6 +15,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+DJANGO_SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+DEBUG = os.getenv("DEBUG")
+# ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "analisis-de-sentimientos-c9ef.onrender.com").split(",")
+
+# ENVIRONMENT = os.getenv("ENV", "development")
+# if ENVIRONMENT == "production":
+#     load_dotenv(".env.production")
+# else:
+#     load_dotenv(".env")
+print(DJANGO_SECRET_KEY)
+print(DEBUG)
+
+if not DJANGO_SECRET_KEY or not DEBUG:
+    raise RuntimeError(
+        "Las variables de entorno deben estar definidas."
+    )
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,12 +40,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "tu_clave_secreta_segura")
+SECRET_KEY = DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+# DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "analisis-de-sentimientos-c9ef.onrender.com").split(",")
+DEBUG = DEBUG
+
+ALLOWED_HOSTS = ["analisis-de-sentimientos-c9ef.onrender.com"]
 
 
 # Application definition
