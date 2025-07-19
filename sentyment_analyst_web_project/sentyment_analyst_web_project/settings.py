@@ -17,15 +17,7 @@ load_dotenv()
 
 DJANGO_SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DEBUG")
-# ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "analisis-de-sentimientos-c9ef.onrender.com").split(",")
 
-# ENVIRONMENT = os.getenv("ENV", "development")
-# if ENVIRONMENT == "production":
-#     load_dotenv(".env.production")
-# else:
-#     load_dotenv(".env")
-print(DJANGO_SECRET_KEY)
-print(DEBUG)
 
 if not DJANGO_SECRET_KEY or not DEBUG:
     raise RuntimeError(
@@ -48,7 +40,7 @@ SECRET_KEY = DJANGO_SECRET_KEY
 DEBUG = DEBUG
 
 ALLOWED_HOSTS = ["analisis-de-sentimientos-s3v7.onrender.com"]
-
+# ALLOWED_HOSTS = ["localhots", "127.0.0.1"]
 
 # Application definition
 
