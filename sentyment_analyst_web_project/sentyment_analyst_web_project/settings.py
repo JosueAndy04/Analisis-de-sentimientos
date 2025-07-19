@@ -47,7 +47,7 @@ SECRET_KEY = DJANGO_SECRET_KEY
 
 DEBUG = DEBUG
 
-ALLOWED_HOSTS = ["analisis-de-sentimientos-c9ef.onrender.com"]
+ALLOWED_HOSTS = ["analisis-de-sentimientos-s3v7.onrender.com"]
 
 
 # Application definition
