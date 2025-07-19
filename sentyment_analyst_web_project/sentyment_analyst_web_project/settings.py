@@ -17,7 +17,7 @@ load_dotenv()
 
 DJANGO_SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DEBUG")
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS")
+# ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS")
 
 
 if not DJANGO_SECRET_KEY or not DEBUG:
@@ -40,8 +40,7 @@ SECRET_KEY = DJANGO_SECRET_KEY
 
 DEBUG = DEBUG
 
-ALLOWED_HOSTS = [ALLOWED_HOSTS]
-# ALLOWED_HOSTS = ["localhots", "127.0.0.1"]
+ALLOWED_HOSTS = ['analisis-de-sentimientos-tcpb.onrender.com']
 
 # Application definition
 
