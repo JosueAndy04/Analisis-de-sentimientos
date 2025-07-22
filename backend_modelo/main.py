@@ -478,6 +478,12 @@ async def predict_file(file: UploadFile = File(...)):
                 "sólo",
                 "si",
                 "tras",
+                "tiene",
+                "tienen",
+                "fue",
+                "ahora",
+                "son",
+                "ser"
             ]
         )
         filtered_words = [w for w in words if w not in stopwords and len(w) > 2]

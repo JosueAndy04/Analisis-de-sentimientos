@@ -55,10 +55,10 @@ html, body {
     "post stack palabras"
     "line line line";
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 520px 420px 620px;
+  grid-template-rows: 0.85fr 0.5fr 1fr;
   gap: 16px;
   width: 100%;
-  /* min-height: 100vh; */
+  min-height: 0;
 }
 
 .div1 { grid-area: usuarios; }
@@ -392,38 +392,9 @@ html, body {
   height: 100% !important;
   max-width: 100%;
   max-height: 100%;
-  min-height: 180px;
-  min-width: 180px;
   margin: 0 auto !important;
   display: block;
   box-sizing: border-box;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-  .parent {
-    grid-template-areas:
-      "usuarios stats"
-      "pie pie"
-      "post stack"
-      "line line";
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 220px 220px 350px 420px;
-  }
-}
-
-@media (max-width: 900px) {
-  .parent {
-    grid-template-areas:
-      "usuarios"
-      "stats"
-      "pie"
-      "post"
-      "stack"
-      "line";
-    grid-template-columns: 1fr;
-    grid-template-rows: 180px 180px 180px 300px 300px 350px;
-  }
 }
 
 @media (max-width: 600px) {
