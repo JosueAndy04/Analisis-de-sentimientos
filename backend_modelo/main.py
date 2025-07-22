@@ -8,6 +8,7 @@ import pandas as pd
 import re
 from collections import Counter
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -25,6 +26,13 @@ model = BertForSequenceClassification.from_pretrained(HUGGINGFACE_MODEL_ID)
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://analisis-de-sentimientos-tcpb.onrender.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class TextInput(BaseModel):
     text: str
