@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BACKEND_URL = os.getenv(
-    "BACKEND_URL", "https://analisis-de-sentimientos-tcpb.onrender.com/"
+    "BACKEND_URL", "https://sentiment-api-production-addd.up.railway.app"
 )
 
 
