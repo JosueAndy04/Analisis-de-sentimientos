@@ -114,10 +114,12 @@ async def read_file(file: UploadFile = File(...)):
 
 @app.post("/predict-file/")
 async def predict_file(file: UploadFile = File(...)):
+    print("Inicia el servidor")
     """
     Analiza el archivo, predice sentimientos y prepara datos para gráficas.
     """
     contents = await file.read()
+    print("📄 Contenido del archivo:", contents)
     try:
         if file.filename and file.filename.endswith(".csv"):
             df = pd.read_csv(
@@ -133,7 +135,7 @@ async def predict_file(file: UploadFile = File(...)):
         # Limpia los nombres de las columnas
         df.columns = df.columns.str.strip()
     except Exception:
-        raise HTTPException(status_code=400, detail="No se pudo leer el archivo.")
+        raise HTTPException(status_code=400, detail="Error en el servidor")
 
     # Conversión de tipos de columnas
     int_columns = [
