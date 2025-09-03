@@ -114,7 +114,6 @@ async def read_file(file: UploadFile = File(...)):
 
 @app.post("/predict-file/")
 async def predict_file(file: UploadFile = File(...)):
-    
     """
     Analiza el archivo, predice sentimientos y prepara datos para gráficas.
     """
