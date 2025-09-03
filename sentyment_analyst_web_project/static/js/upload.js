@@ -89,10 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       fetch(uploadForm.action, {
         method: "POST",
-        headers: {
-          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")
-            .value,
-        },
         body: formData,
       })
         .then((response) => response.json())
