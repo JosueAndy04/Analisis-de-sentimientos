@@ -24,7 +24,7 @@ def upload_file(request):
             response = requests.post(
                 BACKEND_URL + "/predict-file/",
                 files={"file": (file.name, file.read(), file.content_type)},
-                timeout=60,
+                timeout=300,
             )
             if response.status_code == 200:
                 context["data"] = response.json()["data"]
