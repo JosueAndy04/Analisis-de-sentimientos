@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import requests
 import os
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,20 +19,43 @@ def home(request):
 def upload_file(request):
     error = None
     context = {}
+
     if request.method == "POST" and request.FILES.get("file"):
         file = request.FILES["file"]
+
+        # 🔍 Debug del archivo recibido
+        print("📂 Archivo recibido en Django:")
+        print(f"   Nombre: {file.name}")
+        print(f"   Tipo: {file.content_type}")
+        print(f"   Tamaño: {file.size} bytes")
+
+        # 🔄 Reiniciar puntero por si se leyó antes
+        file.seek(0)
+
         try:
+            start_time = time.time()
             response = requests.post(
-                f'{BACKEND_URL}/predict-file/',
+                f"{BACKEND_URL}/predict-file/",
                 files={"file": (file.name, file.read(), file.content_type)},
-                timeout=300,
+                timeout=60,  # ⏳ baja a 60s para ver si hay timeouts más claros
             )
-            print("🔗 URL:", response.url)
+            duration = time.time() - start_time
+
+            # 🔍 Debug de la respuesta
+            print("🔗 URL llamada:", response.url)
+            print(f"⏱️ Tiempo de respuesta: {duration:.2f}s")
+            print("📡 Status Code:", response.status_code)
+
+            try:
+                print("📨 Respuesta JSON:", response.json())
+            except Exception:
+                print("📨 Respuesta cruda:", response.text[:500])  # solo primeros 500 chars
+
             if response.status_code == 200:
-                context["data"] = response.json()["data"]
-                context["predicciones"] = response.json()["predicciones"]
+                data = response.json()
+                context["data"] = data.get("data")
+                context["predicciones"] = data.get("predicciones")
                 context["file_name"] = file.name
-                # Devuelve solo el contexto como JSON
                 return JsonResponse(context)
             else:
                 try:
@@ -44,11 +68,18 @@ def upload_file(request):
                     },
                     status=response.status_code,
                 )
+
+        except requests.exceptions.Timeout:
+            print("⏳ ERROR: El backend no respondió en el tiempo límite (timeout)")
+            return JsonResponse(
+                {"error": "El backend tardó demasiado en responder (timeout)"},
+                status=504,
+            )
         except requests.exceptions.RequestException as e:
+            print("❌ ERROR de conexión con el backend:", str(e))
             return JsonResponse(
                 {"error": f"Error al conectar al backend: {str(e)}"}, status=500
             )
-
 
     # Renderiza el template solo en GET
     context["error"] = error
