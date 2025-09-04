@@ -28,6 +28,7 @@ def upload_file(request):
         print(f"   Nombre: {file.name}")
         print(f"   Tipo: {file.content_type}")
         print(f"   Tamaño: {file.size} bytes")
+        print(f"{BACKEND_URL}/predict-file/")
 
         # 🔄 Reiniciar puntero por si se leyó antes
         file.seek(0)
