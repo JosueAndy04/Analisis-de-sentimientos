@@ -21,4 +21,4 @@ tqdm==4.67.1
 certifi>=2025.8.3
 urllib3>=2.2
 requests>=2.32
-guinicorn==23.0.0
+gunicorn==23.0.0
