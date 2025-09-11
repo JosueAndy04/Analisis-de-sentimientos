@@ -3,8 +3,8 @@ import io
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from transformers import pipeline
-import torch
 import pandas as pd
+import torch
 import re
 from collections import Counter
 import os
@@ -29,7 +29,6 @@ sentiment_pipeline = pipeline(
     tokenizer=HUGGINGFACE_MODEL_ID,
     device=0 if torch.cuda.is_available() else -1,
     batch_size=16,
-    use_auth_token=HF_TOKEN,
     truncation=True,
 )
 
@@ -65,7 +64,7 @@ def map_label(label: str) -> str:
 def predict_label(text: str) -> str:
     if not text or not text.strip():
         return "desconocido"
-    with torch.no_grad():
+    with torch.no_grad(): # type: ignore
         result = sentiment_pipeline([text])[0]
     if isinstance(result, list):
         result = result[0] # type: ignore
@@ -75,7 +74,7 @@ def predict_label(text: str) -> str:
 def predict_labels_batch(texts):
     batch_size = 16
     results = []
-    with torch.no_grad():
+    with torch.no_grad(): # type: ignore
         for i in range(0, len(texts), batch_size):
             batch = [t if isinstance(t, str) and t.strip() else "" for t in texts[i:i+batch_size]]
             preds = sentiment_pipeline(batch)
