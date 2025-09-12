@@ -3,8 +3,8 @@ import io
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from transformers import pipeline
-import pandas as pd
 import torch
+import pandas as pd
 import re
 from collections import Counter
 import os
@@ -49,39 +49,52 @@ class TextInput(BaseModel):
 
 MAX_TEXT_LENGTH = 512
 
+LABELS = {
+    "0": "negativo",
+    "1": "neutro",
+    "2": "positivo",
+    0: "negativo",
+    1: "neutro",
+    2: "positivo"
+}
 
-def map_label(label: str) -> str:
-    label = label.lower()
-    if "neg" in label:
-        return "negativo"
-    if "neu" in label:
+
+def map_label(label):
+    # El label puede venir como string o int
+    if label in LABELS:
+        return LABELS[label]
+    try:
+        idx = int(label)
+        return LABELS.get(idx, "neutro")
+    except Exception:
         return "neutro"
-    if "pos" in label:
-        return "positivo"
-    return "desconocido"
 
 
 def predict_label(text: str) -> str:
     if not text or not text.strip():
-        return "desconocido"
-    with torch.no_grad(): # type: ignore
+        return "neutro"
+    with torch.no_grad():
         result = sentiment_pipeline([text])[0]
-    if isinstance(result, list):
-        result = result[0] # type: ignore
-    return map_label(result["label"])
+    # El label puede venir como '0', '1', '2' o similar
+    label = result["label"]
+    # Algunos modelos devuelven 'LABEL_0', 'LABEL_1', etc.
+    if label.startswith("LABEL_"):
+        label = label.replace("LABEL_", "")
+    return map_label(label)
 
 
 def predict_labels_batch(texts):
     batch_size = 16
     results = []
-    with torch.no_grad(): # type: ignore
+    with torch.no_grad():
         for i in range(0, len(texts), batch_size):
             batch = [t if isinstance(t, str) and t.strip() else "" for t in texts[i:i+batch_size]]
             preds = sentiment_pipeline(batch)
             for pred in preds:
-                if isinstance(pred, list):
-                    pred = pred[0] # type: ignore
-                results.append(map_label(pred["label"]) if pred and "label" in pred else "desconocido")
+                label = pred["label"]
+                if label.startswith("LABEL_"):
+                    label = label.replace("LABEL_", "")
+                results.append(map_label(label))
     return results
 
 
@@ -200,7 +213,7 @@ async def predict_file(file: UploadFile = File(...)):
         if col in df.columns:
             df[col] = df[col].replace("", 0).fillna(0)
 
-    # Predecir sentimientos
+    # Predecir sentimientos (batch)
     if "Post Body" not in df.columns:
         raise HTTPException(
             status_code=400, detail="El archivo no contiene la columna 'Post Body'."
