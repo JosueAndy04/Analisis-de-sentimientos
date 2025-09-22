@@ -22,10 +22,11 @@ def upload_file(request):
         file = request.FILES["file"]
         try:
             response = requests.post(
-                BACKEND_URL + "/predict-file/",
+                f'{BACKEND_URL}/predict-file/',
                 files={"file": (file.name, file.read(), file.content_type)},
-                timeout=60,
+                timeout=1000,
             )
+            print("🔗 URL:", response.url)
             if response.status_code == 200:
                 context["data"] = response.json()["data"]
                 context["predicciones"] = response.json()["predicciones"]
@@ -33,12 +34,22 @@ def upload_file(request):
                 # Devuelve solo el contexto como JSON
                 return JsonResponse(context)
             else:
-                error = response.json()["detail"]
-                return JsonResponse({"error": error}, status=400)
+                try:
+                    error_data = response.json()
+                except Exception:
+                    error_data = {"detail": response.text}
+                return JsonResponse(
+                    {
+                        "error": f"Error en backend ({response.status_code}): {error_data}"
+                    },
+                    status=response.status_code,
+                )
         except requests.exceptions.RequestException as e:
             return JsonResponse(
                 {"error": f"Error al conectar al backend: {str(e)}"}, status=500
             )
+
+
     # Renderiza el template solo en GET
     context["error"] = error
     return render(request, "base/upload.html", context)
