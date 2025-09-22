@@ -18,3 +18,7 @@ python-multipart==0.0.20
 requests==2.32.5
 regex==2025.8.29
 tqdm==4.67.1
+certifi>=2025.8.3
+urllib3>=2.2
+requests>=2.32
+gunicorn==23.0.0
