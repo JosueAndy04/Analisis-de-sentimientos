@@ -2,12 +2,13 @@ from dotenv import load_dotenv
 import io
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
-from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import pipeline
 import torch
 import pandas as pd
 import re
 from collections import Counter
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -19,11 +20,27 @@ if not HUGGINGFACE_MODEL_ID or not HF_TOKEN:
         "Las variables de entorno HUGGINGFACE_MODEL_ID y HF_TOKEN deben estar definidas."
     )
 
-tokenizer = BertTokenizer.from_pretrained(HUGGINGFACE_MODEL_ID)
-model = BertForSequenceClassification.from_pretrained(HUGGINGFACE_MODEL_ID)
+torch.set_grad_enabled(False)
 
+# Carga única del pipeline de inferencia
+sentiment_pipeline = pipeline(
+    "text-classification",
+    model=HUGGINGFACE_MODEL_ID,
+    tokenizer=HUGGINGFACE_MODEL_ID,
+    device=0 if torch.cuda.is_available() else -1,
+    batch_size=16,
+    truncation=True,
+)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class TextInput(BaseModel):
@@ -32,25 +49,53 @@ class TextInput(BaseModel):
 
 MAX_TEXT_LENGTH = 512
 
-LABELS = {0: "negativo", 1: "neutro", 2: "positivo"}
+LABELS = {
+    "0": "negativo",
+    "1": "neutro",
+    "2": "positivo",
+    0: "negativo",
+    1: "neutro",
+    2: "positivo"
+}
+
+
+def map_label(label):
+    # El label puede venir como string o int
+    if label in LABELS:
+        return LABELS[label]
+    try:
+        idx = int(label)
+        return LABELS.get(idx, "neutro")
+    except Exception:
+        return "neutro"
 
 
 def predict_label(text: str) -> str:
-    """
-    Realiza la inferencia de sentimiento sobre un texto dado.
-
-    Parámetros:
-        text (str): Texto a analizar.
-
-    Retorna:
-        str: Etiqueta predicha ('negativo', 'neutro', 'positivo' o 'desconocido').
-    """
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
+    if not text or not text.strip():
+        return "neutro"
     with torch.no_grad():
-        outputs = model(**inputs)
-        logits = outputs.logits
-        predicted_class = torch.argmax(logits, dim=1).item()
-    return LABELS.get(int(predicted_class), "desconocido")
+        result = sentiment_pipeline([text])[0]
+    # El label puede venir como '0', '1', '2' o similar
+    label = result["label"]
+    # Algunos modelos devuelven 'LABEL_0', 'LABEL_1', etc.
+    if label.startswith("LABEL_"):
+        label = label.replace("LABEL_", "")
+    return map_label(label)
+
+
+def predict_labels_batch(texts):
+    batch_size = 16
+    results = []
+    with torch.no_grad():
+        for i in range(0, len(texts), batch_size):
+            batch = [t if isinstance(t, str) and t.strip() else "" for t in texts[i:i+batch_size]]
+            preds = sentiment_pipeline(batch)
+            for pred in preds:
+                label = pred["label"]
+                if label.startswith("LABEL_"):
+                    label = label.replace("LABEL_", "")
+                results.append(map_label(label))
+    return results
 
 
 @app.post("/predict")
@@ -110,6 +155,7 @@ async def predict_file(file: UploadFile = File(...)):
     Analiza el archivo, predice sentimientos y prepara datos para gráficas.
     """
     contents = await file.read()
+
     try:
         if file.filename and file.filename.endswith(".csv"):
             df = pd.read_csv(
@@ -125,7 +171,7 @@ async def predict_file(file: UploadFile = File(...)):
         # Limpia los nombres de las columnas
         df.columns = df.columns.str.strip()
     except Exception:
-        raise HTTPException(status_code=400, detail="No se pudo leer el archivo.")
+        raise HTTPException(status_code=400, detail="Error en el servidor")
 
     # Conversión de tipos de columnas
     int_columns = [
@@ -167,19 +213,13 @@ async def predict_file(file: UploadFile = File(...)):
         if col in df.columns:
             df[col] = df[col].replace("", 0).fillna(0)
 
-    # Predecir sentimientos
+    # Predecir sentimientos (batch)
     if "Post Body" not in df.columns:
         raise HTTPException(
             status_code=400, detail="El archivo no contiene la columna 'Post Body'."
         )
     textos = df["Post Body"].tolist()
-    results = []
-    for text in textos:
-        if isinstance(text, str) and text.strip():
-            label = predict_label(text)
-        else:
-            label = "desconocido"
-        results.append(label)
+    results = predict_labels_batch(textos)
     df["Sentimiento"] = results
 
     # Prepara datos para gráficas
@@ -483,7 +523,7 @@ async def predict_file(file: UploadFile = File(...)):
                 "fue",
                 "ahora",
                 "son",
-                "ser"
+                "ser",
             ]
         )
         filtered_words = [w for w in words if w not in stopwords and len(w) > 2]
