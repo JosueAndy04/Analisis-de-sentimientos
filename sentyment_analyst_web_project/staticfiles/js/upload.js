@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
         rightContent.innerHTML = `
           <h2>Recomendaciones</h2>
           <p>
-            Para garantizar el funcionamiento óptimo del servicio, asegúrate de que tu archivo esté limpio y estructurado de acuerdo al formato requerido. Evita cargar textos muy extensos (más de 280 caracteres por fila), ya que pueden ser truncados o generar predicciones menos precisas. Si deseas utilizar esta herramienta en otro contexto por ejemplo, en el análisis de comentarios en encuestas, reseñas de productos o notas de prensa solo debes adaptar tus datos a la columna "Post Body" y replicar las demás columnas como vacías o genéricas. El modelo fue entrenado en español con datos reales de redes sociales, por lo que funciona mejor con texto informal, pero también se desempeña bien en registros más neutros. Finalmente, si deseas integrar esta herramienta en tu propio flujo de trabajo, puedes contactarnos para acceder a una API o servicio personalizado.
+            Para garantizar el funcionamiento óptimo del servicio, asegúrate de que tu archivo esté limpio y estructurado de acuerdo al formato requerido. Evita cargar textos muy extensos (más de 280 caracteres por fila), ya que pueden ser truncados o generar predicciones menos precisas. Si deseas utilizar esta herramienta en otro contexto por ejemplo, en el análisis de comentarios en encuestas, reseñas de productos o notas de prensa solo debes adaptar tus datos a la columna "Post Body" y replicar las demás columnas como vacías o genéricas. El modelo fue entrenado en español con datos reales de redes sociales, por lo que funciona mejor con texto informal, pero también se desempeña bien en registros más neutros.
           </p>
         `;
       } else {
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
         rightContent.innerHTML = `
           <h2>¿Como empezar?</h2>
           <p>
-            La plataforma de análisis de sentimiento fue diseñada como parte de un trabajo de tesis para proporcionar una solución eficiente, automatizada y confiable que permita a investigadores, periodistas y analistas interpretar rápidamente grandes volúmenes de datos sociales, en especial desde redes como Twitter. El sistema procesa archivos .csv o .xlsx que contengan publicaciones, identificando el sentimiento asociado a cada entrada como positivo, neutro o negativo. Para que la plataforma funcione correctamente, el archivo debe tener una estructura específica, siendo la columna "Post Body" (cuerpo del texto) la principal fuente de análisis. Una vez cargado, el sistema devuelve un panel visual (dashboard) con métricas clave como precisión del análisis, gráficos de distribución, y una opción para descargar resultados en PDF. Esto permite ahorrar tiempo y obtener insights inmediatos para estudios de opinión, campañas, o monitoreo de medios.
+            La plataforma de análisis de sentimiento fue diseñada como parte de un trabajo de tesis para proporcionar una solución eficiente, automatizada y confiable que permita a investigadores, periodistas y analistas interpretar rápidamente grandes volúmenes de datos sociales, en especial desde redes como Twitter. El sistema procesa archivos .csv o .xlsx que contengan publicaciones, identificando el sentimiento asociado a cada entrada como positivo, neutro o negativo. Para que la plataforma funcione correctamente, el archivo debe tener una estructura específica, siendo la columna "Post Body" (cuerpo del texto) la principal fuente de análisis. Una vez cargado, el sistema devuelve un panel visual (dashboard) con métricas clave como precisión del análisis, gráficos de distribución, y más estadísticas. Esto permite ahorrar tiempo y obtener insights inmediatos para estudios de opinión, campañas, o monitoreo de medios.
           </p>
           <table class="example-table">
             <tr>
@@ -89,10 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       fetch(uploadForm.action, {
         method: "POST",
-        headers: {
-          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")
-            .value,
-        },
         body: formData,
       })
         .then((response) => response.json())

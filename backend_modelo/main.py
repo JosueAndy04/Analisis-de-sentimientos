@@ -27,7 +27,7 @@ sentiment_pipeline = pipeline(
     "text-classification",
     model=HUGGINGFACE_MODEL_ID,
     tokenizer=HUGGINGFACE_MODEL_ID,
-    device=0 if torch.cuda.is_available() else -1,
+    device=-1,
     batch_size=16,
     truncation=True,
 )

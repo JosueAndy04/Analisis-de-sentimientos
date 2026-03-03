@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BACKEND_URL = os.getenv(
-    "BACKEND_URL", "https://sentiment-api-production-addd.up.railway.app"
+    "BACKEND_URL", "http://localhost:8000"
 )
 
 
@@ -22,7 +22,7 @@ def upload_file(request):
         file = request.FILES["file"]
         try:
             response = requests.post(
-                BACKEND_URL + "/predict-file/",
+                "http://127.0.0.1:8000/predict-file/",
                 files={"file": (file.name, file.read(), file.content_type)},
                 timeout=60,
             )
