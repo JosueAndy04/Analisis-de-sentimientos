@@ -16,12 +16,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DJANGO_SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG")
-# ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS")
 
 
-if not DJANGO_SECRET_KEY or not DEBUG:
+if not SECRET_KEY or not DEBUG:
     raise RuntimeError("Las variables de entorno deben estar definidas.")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -32,14 +32,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = DJANGO_SECRET_KEY
+SECRET_KEY = SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 DEBUG = DEBUG
 
-ALLOWED_HOSTS = ["analisis-de-sentimientos-tcpb.onrender.com"]
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS", "analisis-de-sentimientos-tcpb.onrender.com"
+).split(",")
 
 # Application definition
 
@@ -136,6 +138,15 @@ STATICFILES_DIRS = [
 ]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# =========================
+# PRODUCCIÓN SEGURA
+# =========================
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
